@@ -1,61 +1,28 @@
-require('dotenv').config();
 const express = require('express');
 const { Client } = require('@line/bot-sdk');
-const axios = require('axios');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const app = express();
-app.use(express.json());
+app.use(express.json()); // 確保可以解析 JSON
 
-// LINE Bot 設定
-const lineConfig = {
-    channelAccessToken:LINE_ACCESS_TOKEN,
-    channelSecret:LINE_CHANNEL_SECRET
+// 設定 LINE Bot
+const config = {
+  channelAccessToken: process.env.LINE_ACCESS_TOKEN,
+  channelSecret: process.env.LINE_CHANNEL_SECRET
 };
-const lineClient = new Client(lineConfig);
+const client = new Client(config);
 
-// Notion API 設定
-const NOTION_DATABASE_ID = NOTION_DATABASE_ID;
-const NOTION_API_KEY = NOTION_API_KEY;
+app.post('/webhook', (req, res) => {
+    console.log("收到 LINE Webhook:", req.body);
 
-// 處理 LINE 訊息
-app.post('/webhook', async (req, res) => {
-    const events = req.body.events;
-    for (let event of events) {
-        if (event.type === 'message' && event.message.type === 'text') {
-            const text = event.message.text;
-            const filteredText = filterBankMessage(text);
-            if (filteredText) {
-                await saveToNotion(filteredText);
-            }
-        }
-    }
-    res.status(200).send('OK');
+    // 確保回應 200，避免 LINE 視為錯誤
+    res.status(200).send("OK");
 });
 
-// 解析銀行消費訊息
-function filterBankMessage(text) {
-    const match = text.match(/(消費)(\d+)(元)/);
-    if (match) {
-        return { amount: match[2], date: new Date().toISOString() };
-    }
-    return null;
-}
-
-// 上傳到 Notion
-async function saveToNotion(data) {
-    await axios.post('https://api.notion.com/v1/pages', {
-        parent: { database_id: NOTION_DATABASE_ID },
-        properties: {
-            "消費金額": { number: parseInt(data.amount) },
-            "日期": { date: { start: data.date } }
-        }
-    }, {
-        headers: {
-            'Authorization': `Bearer ${NOTION_API_KEY}`,
-            'Notion-Version': '2022-06-28',
-            'Content-Type': 'application/json'
-        }
-    });
-}
-
-app.listen(3000, () => console.log('Server running'));
+// 啟動伺服器
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`伺服器運行於 http://localhost:${port}`);
+});
