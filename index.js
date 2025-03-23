@@ -9,8 +9,8 @@ app.use(express.json()); // 確保可以解析 JSON
 
 // 設定 LINE Bot
 const config = {
-  channelAccessToken: process.env.LINE_ACCESS_TOKEN,
-  channelSecret: process.env.LINE_CHANNEL_SECRET
+  channelAccessToken:"LINE_ACCESS_TOKEN",
+  channelSecret:"LINE_CHANNEL_SECRET",
 };
 const client = new Client(config);
 
