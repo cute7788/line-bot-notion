@@ -8,14 +8,14 @@ app.use(express.json());
 
 // LINE Bot 設定
 const lineConfig = {
-    channelAccessToken: process.env.LINE_ACCESS_TOKEN,
-    channelSecret: process.env.LINE_CHANNEL_SECRET
+    channelAccessToken:LINE_ACCESS_TOKEN,
+    channelSecret:LINE_CHANNEL_SECRET
 };
 const lineClient = new Client(lineConfig);
 
 // Notion API 設定
-const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID;
-const NOTION_API_KEY = process.env.NOTION_API_KEY;
+const NOTION_DATABASE_ID = NOTION_DATABASE_ID;
+const NOTION_API_KEY = NOTION_API_KEY;
 
 // 處理 LINE 訊息
 app.post('/webhook', async (req, res) => {
